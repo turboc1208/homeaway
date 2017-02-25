@@ -9,11 +9,10 @@
 # 17FEB2017	CC 	Initial release
 #
 #################################
-import appdaemon.appapi as appapi
+import my_appapi as appapi
 from datetime import datetime, timedelta
-from utils import *
              
-class homeaway(appapi.AppDaemon):
+class homeaway(appapi.my_appapi):
 
   def initialize(self):
     # self.LOGLEVEL="DEBUG"
@@ -183,44 +182,3 @@ class homeaway(appapi.AppDaemon):
   # my version of Appdaemon's get_trackers returns a full dictionary for each tracker
   def my_get_trackers(self):
     return(self.get_state("device_tracker"))
-
-
-  # my log message overrides the AppDaemon one
-  def log(self,msg,level="INFO"):
-    obj,fname, line, func, context, index=inspect.getouterframes(inspect.currentframe())[1]
-    super(homeaway,self).log("{} - ({}) {}".format(func,str(line),msg),level)
-
-  # set the house state based on input_select in HA
-  def set_house_state(self,entity,state):
-    if self.entity_exists(entity):
-      self.select_option(entity,state)
-      retval=self.get_state(entity)
-    else:
-      retval=None
-    return(retval)
-
-  # get get house state based on input_select in HA
-  def get_house_state(self,entity):
-    if self.entity_exists(entity):
-      state=self.get_state(entity)
-      self.log("house state={}".format(state),"DEBUG")
-    else:
-      state=None
-    return(state)
-
-  def restart_app(self):
-    import os
-    import fnmatch
-    import subprocess
-
-    matches=[]
-    module=self.args["module"]
-    module=module+".py"
-    path=self.config["AppDaemon"]["app_dir"]
-    for root,dirnames,filenames in os.walk(path):
-      #self.log("root={} dirnames={} filenames={}".format(root,dirnames,filenames))
-      for filename in fnmatch.filter(filenames, module):
-        matches.append(os.path.join(root,filename))
-    self.log("restarting {}".format(matches))
-    subprocess.call(["touch",matches[0]])
-
