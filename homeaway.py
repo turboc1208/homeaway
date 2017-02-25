@@ -135,7 +135,7 @@ class homeaway(appapi.AppDaemon):
               self.log("light {} was last turned on at {} which is less than 15 minutes ago so leave it on".format(light,last_update))
         else:
           self.log("room {} occupants {} are home".format(room,self.rooms[room]["occupants"]))
-          if state=="home":                               # deal with any ligths to turn on as a result of someone coming home. ignore if due to timer
+          if source=="home":                               # deal with any ligths to turn on as a result of someone coming home. ignore if due to timer
             light_list=self.build_light_list(self.rooms[room]["home"]["lights"])
             for light in light_list:                       # loop through the rooms lights
               # what is the last time the lights state was changed
